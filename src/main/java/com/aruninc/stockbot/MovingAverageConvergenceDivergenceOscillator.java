@@ -1,21 +1,33 @@
 package com.aruninc.stockbot;
 
-import java.time.LocalDate;
-
 /**
  *
  * @author tonyj
  */
-public class MovingAverageConvergenceDivergenceOscillator {
-    private final ExponentialMovingAverage shortEMA = new ExponentialMovingAverage(12);
-    private final ExponentialMovingAverage longEMA = new ExponentialMovingAverage(26);
-    private final ExponentialMovingAverage indicatorEMA = new ExponentialMovingAverage(9);
+public class MovingAverageConvergenceDivergenceOscillator implements Indicator {
+    private final ExponentialMovingAverage shortEMA;
+    private final ExponentialMovingAverage longEMA;
+    private final ExponentialMovingAverage indicatorEMA;
+    private final MACDLine line;
 
     
-    public MovingAverageConvergenceDivergenceOscillator() {
+    public MovingAverageConvergenceDivergenceOscillator(HistoricalValue values, int shortPeriod, int longPeriod, int emaPeriod) {
+       shortEMA = new ExponentialMovingAverage(values, shortPeriod);
+       longEMA = new ExponentialMovingAverage(values, longPeriod);
+       line = new MACDLine();
+       indicatorEMA = new ExponentialMovingAverage(line,emaPeriod);
     }
     
-    double getIndicatorValue(Stock stock, LocalDate date) {
-        return indicatorEMA.getIndicatorValue(stock, date) - (shortEMA.getIndicatorValue(stock,date) - longEMA.getIndicatorValue(stock, date));
+    @Override
+    public double valueAt(StockDate date) {
+        return  line.valueAt(date) - indicatorEMA.valueAt(date);
+    }
+    private class MACDLine implements HistoricalValue {
+
+        @Override
+        public double valueAt(StockDate date) {
+            return shortEMA.valueAt(date) - longEMA.valueAt(date);
+        }
+        
     }
 }

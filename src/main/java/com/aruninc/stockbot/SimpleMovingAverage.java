@@ -1,27 +1,23 @@
 package com.aruninc.stockbot;
 
-import java.time.LocalDate;
-
 /**
  *
  * @author tonyj
  */
-public class SimpleMovingAverage {
+public class SimpleMovingAverage implements Indicator {
     private final int nDays;
+    private final HistoricalValue values;
 
-    public SimpleMovingAverage(int nDays) {
+    public SimpleMovingAverage(HistoricalValue values, int nDays) {
         this.nDays = nDays;
+        this.values = values;
     }
     
-    double getIndicatorValue(Stock stock, LocalDate date) {
+    @Override
+    public double valueAt(StockDate date) {
         double result = 0;
-        int daysFound = 0;
-        for (int day = 0; daysFound<nDays; day++) {
-            Stock.OpenHighLowCloseVolume value = stock.get(date.minusDays(day));
-            if (value != null) {
-                daysFound++;
-                result += value.getClose();
-            }
+        for (StockDate day : StockDate.range(date.minus(nDays-1), date)) {
+            result += values.valueAt(day);
         }
         return result/nDays;
     }

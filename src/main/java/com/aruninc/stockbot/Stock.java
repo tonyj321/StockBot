@@ -1,6 +1,5 @@
 package com.aruninc.stockbot;
 
-import java.time.LocalDate;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -11,13 +10,13 @@ import java.util.TreeMap;
 class Stock {
 
     private final String ticker;
-    private final Map<LocalDate, OpenHighLowCloseVolume> data = new TreeMap<>();
+    private final Map<StockDate, OpenHighLowCloseVolume> data = new TreeMap<>();
 
     Stock(String ticker) {
         this.ticker = ticker;
     }
 
-    void addData(LocalDate date, double open, double high, double low, double close, long volume) {
+    void addData(StockDate date, double open, double high, double low, double close, long volume) {
         data.put(date, new OpenHighLowCloseVolume(open, high, low, close, volume));
     }
 
@@ -26,8 +25,19 @@ class Stock {
         return "Stock{" + "ticker=" + ticker + ", data=" + data + '}';
     }
 
-    OpenHighLowCloseVolume get(LocalDate date) {
+    OpenHighLowCloseVolume get(StockDate date) {
         return data.get(date);
+    }
+    
+    HistoricalValue closingPrices() {
+        return new HistoricalValue() {
+
+            @Override
+            public double valueAt(StockDate date) {
+                return data.get(date).getClose();
+            }
+            
+        };
     }
     
     public static class OpenHighLowCloseVolume {

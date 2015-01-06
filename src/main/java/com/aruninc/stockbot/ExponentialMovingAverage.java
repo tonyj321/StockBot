@@ -1,41 +1,29 @@
 package com.aruninc.stockbot;
 
-import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.Collections;
-
 /**
  *
  * @author tonyj
  */
-public class ExponentialMovingAverage {
+public class ExponentialMovingAverage implements Indicator {
 
     private final int nDays;
-    private final int nBack = 150;
+    private final int nBack = 50;
     private final SimpleMovingAverage simpleMovingAverage;
+    private final HistoricalValue values;
 
-    public ExponentialMovingAverage(int nDays) {
+    public ExponentialMovingAverage(HistoricalValue values, int nDays) {
         this.nDays = nDays;
-        simpleMovingAverage = new SimpleMovingAverage(nDays);
+        this.values = values;
+        simpleMovingAverage = new SimpleMovingAverage(values, nDays);
     }
 
-    double getIndicatorValue(Stock stock, LocalDate date) {
-        LocalDate[] dates = new LocalDate[nBack];
-        int daysFound = 0;
-        for (int day = 0; daysFound < nBack; day++) {
-            Stock.OpenHighLowCloseVolume value = stock.get(date.minusDays(day));
-            if (value != null) {
-               dates[daysFound] = date.minusDays(day);
-               daysFound++;
-            }
-        }
-        Collections.reverse(Arrays.asList(dates));
-        // We have found the starting
-        double ema = simpleMovingAverage.getIndicatorValue(stock, dates[0]);
+    @Override
+    public double valueAt(StockDate date) {
+        StockDate start = date.minus(nBack);
+        double ema = simpleMovingAverage.valueAt(start);
         double multiplier = 2.0 / (nDays + 1);
-        for (LocalDate day : dates) {
-            Stock.OpenHighLowCloseVolume value = stock.get(day);
-            ema = (value.getClose() - ema) * multiplier + ema;
+       for (StockDate day : StockDate.range(start,date)) {
+            ema = (values.valueAt(day) - ema) * multiplier + ema;
         }
         return ema;
     }

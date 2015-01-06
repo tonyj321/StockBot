@@ -8,7 +8,6 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
@@ -23,11 +22,17 @@ public class StockBot {
         StockBot stockBot = new StockBot();
         stockBot.readZip("/home/tonyj/Downloads/NASDAQ_2014.zip");
         final Stock stock = stockBot.stockMap.get("IRBT");
-        System.out.println(stock.get(LocalDate.parse("2014-11-13")));
+        final StockDate date = StockDate.parse("2014-07-30");
+        System.out.println(stock.get(date));
         
-        MovingAverageConvergenceDivergenceOscillator macd = new MovingAverageConvergenceDivergenceOscillator();
-        double indicatorValue = macd.getIndicatorValue(stock, LocalDate.parse("2014-10-31"));
-        System.out.println(indicatorValue);
+        Indicator sma = new SimpleMovingAverage(stock.closingPrices(), 30);
+        System.out.printf("sma=%5g\n",sma.valueAt(date));
+        
+        Indicator ema = new ExponentialMovingAverage(stock.closingPrices(), 30);
+        System.out.printf("ema=%5g\n",ema.valueAt(date));
+
+        Indicator macd = new MovingAverageConvergenceDivergenceOscillator(stock.closingPrices(), 12, 26, 9);
+        System.out.printf("macd=%5g\n",macd.valueAt(date));
     }
     private final Map<String,Stock> stockMap = new HashMap<>();
 
@@ -52,7 +57,7 @@ public class StockBot {
                 }
                 String[] tokens = line.split(",");
                 String ticker = tokens[0];
-                LocalDate date = LocalDate.parse(tokens[1],DateTimeFormatter.BASIC_ISO_DATE);
+                StockDate date = StockDate.parse(tokens[1],DateTimeFormatter.BASIC_ISO_DATE);
                 double open = Double.parseDouble(tokens[2]);
                 double high = Double.parseDouble(tokens[3]);
                 double low = Double.parseDouble(tokens[4]);
