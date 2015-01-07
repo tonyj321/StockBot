@@ -20,18 +20,19 @@ public class StockBot {
 
     public static void main(String[] args) throws IOException {
         StockBot stockBot = new StockBot();
-        stockBot.readZip("C:\\Users\\Arun\\StockBot\\NASDAQ_2014.zip");
+        String home = System.getProperty("user.home");
+        stockBot.readZip(Paths.get(home,"StockBot/NASDAQ_2014.zip"));
         System.out.println("Nasdaq 2014 archived");
-        stockBot.readZip("C:\\Users\\Arun\\StockBot\\NASDAQ_2013.zip");
+        stockBot.readZip(Paths.get(home,"StockBot/NASDAQ_2013.zip"));
         System.out.println("Nasdaq 2013 archived");
-        stockBot.readZip("C:\\Users\\Arun\\StockBot\\NASDAQ_2012.zip");
+        stockBot.readZip(Paths.get(home,"StockBot/NASDAQ_2012.zip"));
         System.out.println("Nasdaq 2012 archived");
-//        stockBot.readZip("C:\\Users\\Arun\\StockBot\\NASDAQ_2011.zip");
-//        System.out.println("Nasdaq 2011 archived");
-//        stockBot.readZip("C:\\Users\\Arun\\StockBot\\NASDAQ_2010.zip");
-//        System.out.println("Nasdaq 2010 archived");
-//        stockBot.readZip("C:\\Users\\Arun\\StockBot\\NASDAQ_2009.zip");
-//        System.out.println("Nasdaq 2009 archived");
+        stockBot.readZip(Paths.get(home,"StockBot/NASDAQ_2011.zip"));
+        System.out.println("Nasdaq 2011 archived");
+        stockBot.readZip(Paths.get(home,"StockBot/NASDAQ_2010.zip"));
+        System.out.println("Nasdaq 2010 archived");
+        stockBot.readZip(Paths.get(home,"StockBot/NASDAQ_2009.zip"));
+        System.out.println("Nasdaq 2009 archived");
 
         final Stock stock = stockBot.stockMap.get("TSLA");
         final StockDate date = StockDate.parse("2014-07-30");
@@ -74,8 +75,7 @@ public class StockBot {
 
     private final Map<String, Stock> stockMap = new HashMap<>();
 
-    private void readZip(String zipFile) throws IOException {
-        Path zipPath = Paths.get(zipFile);
+    private void readZip(Path zipPath) throws IOException {
         FileSystem fs = FileSystems.newFileSystem(zipPath, null);
         for (Path dir : fs.getRootDirectories()) {
             try (DirectoryStream<Path> stream = Files.newDirectoryStream(dir)) {
