@@ -17,7 +17,7 @@ public class MovingAverageConvergenceDivergenceOscillator implements Indicator {
        line = new MACDLine();
        indicatorEMA = new ExponentialMovingAverage(line,emaPeriod);
     }
-    
+        
     @Override
     public double valueAt(StockDate date) {
         return  line.valueAt(date) - indicatorEMA.valueAt(date);

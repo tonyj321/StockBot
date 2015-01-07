@@ -61,4 +61,11 @@ public class StockDate implements Comparable<StockDate> {
     public int compareTo(StockDate other) {
         return date.compareTo(other.date);
     }
+
+    @Override
+    public String toString() {
+        return "StockDate{" + "date=" + date + '}';
+    }
+    
+    
 }

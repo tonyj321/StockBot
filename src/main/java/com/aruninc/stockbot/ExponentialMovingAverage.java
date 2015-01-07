@@ -7,7 +7,7 @@ package com.aruninc.stockbot;
 public class ExponentialMovingAverage implements Indicator {
 
     private final int nDays;
-    private final int nBack = 50;
+    private final int nBack = 250;
     private final SimpleMovingAverage simpleMovingAverage;
     private final HistoricalValue values;
 
