@@ -20,7 +20,6 @@ public class StockBot {
 
     public static void main(String[] args) throws IOException {
         StockBot stockBot = new StockBot();
-        StockBot oldStockBot = new StockBot();
         String home = System.getProperty("user.home");
         stockBot.readZip(Paths.get(home, "NetBeansProjects/StockBot/StockBot/NASDAQ_2014.zip"));
         System.out.println("Nasdaq 2014 archived");
@@ -34,8 +33,6 @@ public class StockBot {
         System.out.println("Nasdaq 2010 archived");
         stockBot.readZip(Paths.get(home, "NetBeansProjects/StockBot/StockBot/NASDAQ_2009.zip"));
         System.out.println("Nasdaq 2009 archived");
-        oldStockBot.readZip(Paths.get(home, "NetBeansProjects/StockBot/StockBot/NASDAQ_2009.zip"));
-        System.out.println("Nasdaq 2009 archived");
 
         Stock stock = stockBot.stockMap.get("IRBT");
         final StockDate date = StockDate.parse("2014-07-30");
@@ -47,7 +44,7 @@ public class StockBot {
         double totalProfit = 0;
         double totalPercentProfit = 0;
         
-        for (Object ticker : oldStockBot.stockMap.keySet()) {
+        for (Object ticker : stockBot.stockMap.keySet()) {
             stock = stockBot.stockMap.get((String) ticker);
             try {
                 double subTotalProfit = 0;
