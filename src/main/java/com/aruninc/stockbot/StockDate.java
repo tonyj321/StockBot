@@ -18,7 +18,6 @@ public class StockDate implements Comparable<StockDate> {
 
     StockDate(LocalDate date) {
         this.date = date;
-        dates.add(this);
     }
 
     static StockDate first() {
@@ -47,6 +46,12 @@ public class StockDate implements Comparable<StockDate> {
 
     static NavigableSet<StockDate> range(StockDate from, StockDate to) {
         return dates.subSet(from, true, to, true);
+    }
+    
+    static StockDate put(String string, DateTimeFormatter dateFormat) {
+        StockDate date = parse(string, dateFormat);
+        dates.add(date);
+        return date;
     }
 
     static StockDate parse(String string, DateTimeFormatter dateFormat) {

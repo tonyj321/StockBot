@@ -114,7 +114,7 @@ public class StockBot {
                 }
                 String[] tokens = line.split(",");
                 String ticker = tokens[0];
-                StockDate date = StockDate.parse(tokens[1], DateTimeFormatter.BASIC_ISO_DATE);
+                StockDate date = StockDate.put(tokens[1], DateTimeFormatter.BASIC_ISO_DATE);
                 double open = Double.parseDouble(tokens[2]);
                 double high = Double.parseDouble(tokens[3]);
                 double low = Double.parseDouble(tokens[4]);
