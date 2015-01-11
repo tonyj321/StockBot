@@ -1,7 +1,6 @@
 package com.aruninc.stockbot;
 
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.ArrayList;
 
 /**
  *
@@ -10,14 +9,22 @@ import java.util.TreeMap;
 class Stock {
 
     private final String ticker;
-    private final Map<StockDate, OpenHighLowCloseVolume> data = new TreeMap<>();
+    private final ArrayList<OpenHighLowCloseVolume> data = new ArrayList<>();
 
     Stock(String ticker) {
         this.ticker = ticker;
     }
 
     void addData(StockDate date, double open, double high, double low, double close, long volume) {
-        data.put(date, new OpenHighLowCloseVolume(open, high, low, close, volume));
+        final int uniqueId = date.getUniqueId();
+        while (uniqueId > data.size()) {
+            data.add(null);
+        }
+        if (uniqueId == data.size()) {
+            data.add(new OpenHighLowCloseVolume(open, high, low, close, volume));
+        } else {
+            data.set(uniqueId, new OpenHighLowCloseVolume(open, high, low, close, volume));
+        }
     }
 
     @Override
@@ -26,13 +33,16 @@ class Stock {
     }
 
     OpenHighLowCloseVolume get(StockDate date) {
-        final OpenHighLowCloseVolume datum = data.get(date);
-        if (datum == null) {
-            throw new StockValueNotAvailable("Stock "+ticker+" no available for date "+date);
+        final int uniqueId = date.getUniqueId();
+        if (uniqueId < data.size()) {
+            final OpenHighLowCloseVolume datum = data.get(uniqueId);
+            if (datum != null) {
+                return datum;
+            }
         }
-        return datum;
+        throw new StockValueNotAvailable("Stock " + ticker + " not available for date " + date);
     }
-    
+
     HistoricalValue closingPrices() {
         return new HistoricalValue() {
 
@@ -40,10 +50,10 @@ class Stock {
             public double valueAt(StockDate date) {
                 return get(date).getClose();
             }
-            
+
         };
     }
-    
+
     public static class OpenHighLowCloseVolume {
 
         private final long volume;
@@ -84,7 +94,7 @@ class Stock {
         public double getOpen() {
             return open;
         }
-        
+
     }
 
 }

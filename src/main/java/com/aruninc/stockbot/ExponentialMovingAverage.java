@@ -22,7 +22,7 @@ public class ExponentialMovingAverage implements Indicator {
         StockDate start = date.minus(nBack);
         double ema = simpleMovingAverage.valueAt(start);
         double multiplier = 2.0 / (nDays + 1);
-       for (StockDate day : StockDate.range(start,date)) {
+        for (StockDate day : StockDate.range(start, date)) {
             ema = (values.valueAt(day) - ema) * multiplier + ema;
         }
         return ema;

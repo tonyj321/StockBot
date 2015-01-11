@@ -84,7 +84,7 @@ public class StockBot {
                 }
                 System.out.printf("Sub-Total Profit = %5g\n", subTotalProfit);
                 totalProfit += subTotalProfit;
-                if (nStocks++>10) break;
+                if (nStocks++>100) break;
                 
             } catch (StockValueNotAvailable x) {
                 System.out.println("Skipping "+ticker+" because: "+x.getMessage());
