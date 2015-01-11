@@ -69,7 +69,7 @@ public class StockDate implements Comparable<StockDate> {
 
     @Override
     public String toString() {
-        return "StockDate{" + "date=" + date + '}';
+        return date.toString();
     }
     
     

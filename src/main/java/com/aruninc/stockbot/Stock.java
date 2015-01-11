@@ -26,7 +26,11 @@ class Stock {
     }
 
     OpenHighLowCloseVolume get(StockDate date) {
-        return data.get(date);
+        final OpenHighLowCloseVolume datum = data.get(date);
+        if (datum == null) {
+            throw new StockValueNotAvailable("Stock "+ticker+" no available for date "+date);
+        }
+        return datum;
     }
     
     HistoricalValue closingPrices() {
@@ -34,7 +38,7 @@ class Stock {
 
             @Override
             public double valueAt(StockDate date) {
-                return data.get(date).getClose();
+                return get(date).getClose();
             }
             
         };

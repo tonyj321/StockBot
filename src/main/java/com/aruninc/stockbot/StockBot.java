@@ -19,6 +19,7 @@ import java.util.Map;
 public class StockBot {
 
     public static void main(String[] args) throws IOException {
+        long start = System.currentTimeMillis();
         StockBot stockBot = new StockBot();
         String home = System.getProperty("user.home");
         stockBot.readZip(Paths.get(home, "NetBeansProjects/StockBot/StockBot/NASDAQ_2014.zip"));
@@ -33,6 +34,8 @@ public class StockBot {
         System.out.println("Nasdaq 2010 archived");
         stockBot.readZip(Paths.get(home, "NetBeansProjects/StockBot/StockBot/NASDAQ_2009.zip"));
         System.out.println("Nasdaq 2009 archived");
+        long read = System.currentTimeMillis();
+        System.out.printf("Read took %,dms\n",read-start);
 
         Stock stock = stockBot.stockMap.get("IRBT");
         final StockDate date = StockDate.parse("2014-07-30");
@@ -44,8 +47,9 @@ public class StockBot {
         double totalProfit = 0;
         double totalPercentProfit = 0;
         
-        for (Object ticker : stockBot.stockMap.keySet()) {
-            stock = stockBot.stockMap.get((String) ticker);
+        int nStocks = 0;
+        for (String ticker : stockBot.stockMap.keySet()) {
+            stock = stockBot.stockMap.get(ticker);
             try {
                 double subTotalProfit = 0;
                 Indicator sma = new SimpleMovingAverage(stock.closingPrices(), 30);
@@ -80,13 +84,16 @@ public class StockBot {
                 }
                 System.out.printf("Sub-Total Profit = %5g\n", subTotalProfit);
                 totalProfit += subTotalProfit;
+                if (nStocks++>10) break;
                 
-            } catch (NullPointerException np) {
-
+            } catch (StockValueNotAvailable x) {
+                System.out.println("Skipping "+ticker+" because: "+x.getMessage());
             }
             
         }
         System.out.printf("Total Profit = %5g\n", totalProfit);
+        long stop = System.currentTimeMillis();
+        System.out.printf("Analyze took %,dms\n",stop-read);
     }
 
     private final Map<String, Stock> stockMap = new HashMap<>();
