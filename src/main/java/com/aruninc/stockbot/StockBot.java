@@ -35,41 +35,34 @@ public class StockBot {
         stockBot.readZip(Paths.get(home, "NetBeansProjects/StockBot/StockBot/NASDAQ_2009.zip"));
         System.out.println("Nasdaq 2009 archived");
         long read = System.currentTimeMillis();
-        System.out.printf("Read took %,dms\n",read-start);
+        System.out.printf("Read took %,dms\n", read - start);
 
         Stock stock = stockBot.stockMap.get("IRBT");
         final StockDate date = StockDate.parse("2014-07-30");
         System.out.println(stock.get(date));
         
-        double previousValue = 0;
-        double buyPrice = -1;
-        double percentProfit = 0;
         double totalProfit = 0;
-        double totalPercentProfit = 0;
-        
-        int nStocks = 0;
+        double totalCost = 0;
+
         for (String ticker : stockBot.stockMap.keySet()) {
             stock = stockBot.stockMap.get(ticker);
             try {
                 double subTotalProfit = 0;
-                Indicator sma = new SimpleMovingAverage(stock.closingPrices(), 30);
-                //System.out.printf("sma=%5g\n", sma.valueAt(date));
-
-                Indicator ema = new ExponentialMovingAverage(stock.closingPrices(), 30);
-                //System.out.printf("ema=%5g\n", ema.valueAt(date));
-
+                double openingPrice = 0;
+                double previousValue = 0;
+                double buyPrice = -1;
                 Indicator macd = new MovingAverageConvergenceDivergenceOscillator(stock.closingPrices(), 12, 26, 9);
-                //System.out.printf("macd=%5g\n", macd.valueAt(date));
 
-                
                 for (StockDate day : StockDate.range(StockDate.parse("2014-01-29"), StockDate.parse("2014-09-29"))) {
 
                     final double currentValue = macd.valueAt(day);
-                    //System.out.printf("%s: macd=%5g\n", day, currentValue);
                     if (Math.signum(previousValue) != Math.signum(currentValue) && previousValue != 0) {
                         if (currentValue > 0) {
                             //System.out.printf("%s: Buy!\n", day);
                             buyPrice = stock.closingPrices().valueAt(day);
+                            if (openingPrice == 0) {
+                                openingPrice = buyPrice;
+                            }
                         } else {
                             if (buyPrice != -1) {
                                 double profit = stock.closingPrices().valueAt(day) - buyPrice;
@@ -82,18 +75,17 @@ public class StockBot {
                     previousValue = currentValue;
 
                 }
-                System.out.printf("Sub-Total Profit = %5g\n", subTotalProfit);
+                System.out.printf("Sub-Total Profit = %5g (%5g%%)\n", subTotalProfit, 100 * subTotalProfit / openingPrice);
                 totalProfit += subTotalProfit;
-                if (nStocks++>100) break;
-                
+                totalCost += openingPrice;
             } catch (StockValueNotAvailable x) {
-                System.out.println("Skipping "+ticker+" because: "+x.getMessage());
+                System.out.println("Skipping " + ticker + " because: " + x.getMessage());
             }
-            
+
         }
-        System.out.printf("Total Profit = %5g\n", totalProfit);
+        System.out.printf("Total Profit = %5g(%5g%%)\n", totalProfit, 100*totalProfit/totalCost);
         long stop = System.currentTimeMillis();
-        System.out.printf("Analyze took %,dms\n",stop-read);
+        System.out.printf("Analyze took %,dms\n", stop - read);
     }
 
     private final Map<String, Stock> stockMap = new HashMap<>();
