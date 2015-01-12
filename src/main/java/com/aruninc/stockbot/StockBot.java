@@ -18,6 +18,8 @@ import java.util.Map;
  */
 public class StockBot {
 
+    private final Map<String, Stock> stockMap = new HashMap<>();
+
     public static void main(String[] args) throws IOException {
         long start = System.currentTimeMillis();
         StockBot stockBot = new StockBot();
@@ -37,58 +39,15 @@ public class StockBot {
         long read = System.currentTimeMillis();
         System.out.printf("Read took %,dms\n", read - start);
 
-        Stock stock = stockBot.stockMap.get("IRBT");
-        final StockDate date = StockDate.parse("2014-07-30");
-        System.out.println(stock.get(date));
-        
-        double totalProfit = 0;
-        double totalCost = 0;
+        MACDBuySellStrategy macdBuySellStrategy = new MACDBuySellStrategy(stockBot.stockMap, StockDate.parse("2014-01-29"), StockDate.parse("2014-09-29"));
+        macdBuySellStrategy.compute();
+//        BuySellStrategy buySellStrategy = new BuyMondaySellFridayStrategy(stockBot.stockMap, StockDate.parse("2014-01-29"), StockDate.parse("2014-09-29"));
+//        buySellStrategy.compute();
+//        buySellStrategy.report();
 
-        for (String ticker : stockBot.stockMap.keySet()) {
-            stock = stockBot.stockMap.get(ticker);
-            try {
-                double subTotalProfit = 0;
-                double openingPrice = 0;
-                double previousValue = 0;
-                double buyPrice = -1;
-                Indicator macd = new MovingAverageConvergenceDivergenceOscillator(stock.closingPrices(), 12, 26, 9);
-
-                for (StockDate day : StockDate.range(StockDate.parse("2014-01-29"), StockDate.parse("2014-09-29"))) {
-
-                    final double currentValue = macd.valueAt(day);
-                    if (Math.signum(previousValue) != Math.signum(currentValue) && previousValue != 0) {
-                        if (currentValue > 0) {
-                            //System.out.printf("%s: Buy!\n", day);
-                            buyPrice = stock.closingPrices().valueAt(day);
-                            if (openingPrice == 0) {
-                                openingPrice = buyPrice;
-                            }
-                        } else {
-                            if (buyPrice != -1) {
-                                double profit = stock.closingPrices().valueAt(day) - buyPrice;
-                                //System.out.printf("%s: Sell! Profit = %5g\n", day, profit);
-                                subTotalProfit += profit;
-
-                            }
-                        }
-                    }
-                    previousValue = currentValue;
-
-                }
-                System.out.printf("Sub-Total Profit = %5g (%5g%%)\n", subTotalProfit, 100 * subTotalProfit / openingPrice);
-                totalProfit += subTotalProfit;
-                totalCost += openingPrice;
-            } catch (StockValueNotAvailable x) {
-                System.out.println("Skipping " + ticker + " because: " + x.getMessage());
-            }
-
-        }
-        System.out.printf("Total Profit = %5g(%5g%%)\n", totalProfit, 100*totalProfit/totalCost);
         long stop = System.currentTimeMillis();
         System.out.printf("Analyze took %,dms\n", stop - read);
     }
-
-    private final Map<String, Stock> stockMap = new HashMap<>();
 
     private void readZip(Path zipPath) throws IOException {
         FileSystem fs = FileSystems.newFileSystem(zipPath, null);

@@ -76,6 +76,10 @@ public class StockDate implements Comparable<StockDate> {
         }
     }
 
+    public LocalDate getDate() {
+        return date;
+    }  
+
     @Override
     public int compareTo(StockDate other) {
         return date.compareTo(other.date);
