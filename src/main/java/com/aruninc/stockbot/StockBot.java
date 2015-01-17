@@ -39,8 +39,8 @@ public class StockBot {
         long read = System.currentTimeMillis();
         System.out.printf("Read took %,dms\n", read - start);
 
-        EMABuySellStrategy emaBuySellStrategy = new EMABuySellStrategy(stockBot.stockMap, StockDate.parse("2013-01-29"), StockDate.parse("2014-09-29"));
-        emaBuySellStrategy.compute();
+        SMABestBuySellStrategy smaBestBuySellStrategy = new SMABestBuySellStrategy(stockBot.stockMap, StockDate.parse("2013-01-29"), StockDate.parse("2014-09-29"));
+        smaBestBuySellStrategy.compute();
 //        BuySellStrategy buySellStrategy = new BuyMondaySellFridayStrategy(stockBot.stockMap, StockDate.parse("2014-01-29"), StockDate.parse("2014-09-29"));
 //        buySellStrategy.compute();
 //        buySellStrategy.report();
