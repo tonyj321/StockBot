@@ -39,6 +39,16 @@ public abstract class BuySellStrategy {
         buySell.add(Lot.sell(stock, date, price, nStocks));
     }
 
+    int getCurrentlyOwned(Stock stock) {
+        int totalShares = 0;
+        for (Lot l : buySell) {
+            if (l.stock == stock) {
+                totalShares += l.buy ? l.nStocks : -l.nStocks;
+            }
+        }
+        return totalShares;
+    }
+    
     abstract void compute();
 
     void report() {

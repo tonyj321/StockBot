@@ -45,7 +45,7 @@ public class StockBot {
         buySellStrategy.compute();
         buySellStrategy.report();
         
-        buySellStrategy = new MACDBuySellStrategy(stockBot.stockMap, StockDate.parse("2014-01-29"), StockDate.parse("2014-09-29"));
+        buySellStrategy = new SMABestBuySellStrategy(stockBot.stockMap, StockDate.parse("2014-01-29"), StockDate.parse("2014-09-29"));
         buySellStrategy.compute();
         buySellStrategy.report();
 
