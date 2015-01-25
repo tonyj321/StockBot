@@ -41,7 +41,7 @@ public class MACDBuySellStrategy extends BuySellStrategy {
 
                 }
             } catch (StockValueNotAvailable x) {
-                System.out.println("Skipping " + stock + " because: " + x.getMessage());
+                System.out.println("Skipping " + stock.getTicker() + " because: " + x.getMessage());
             }
 
         }

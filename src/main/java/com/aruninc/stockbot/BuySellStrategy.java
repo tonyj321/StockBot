@@ -72,9 +72,13 @@ public abstract class BuySellStrategy {
         }
         // If there are left over stocks, we need to sell (buy) them
         for (Map.Entry<Stock, Count> holding : held.entrySet()) {
-            int c = holding.getValue().getCount();
-            if (c != 0) {
-                totalMoney += c * holding.getKey().get(end).getClose();
+            try {
+                int c = holding.getValue().getCount();
+                if (c != 0) {
+                    totalMoney += c * holding.getKey().get(end).getClose();
+                }
+            } catch (StockValueNotAvailable x) {
+                // Assume worthless
             }
         }
 
