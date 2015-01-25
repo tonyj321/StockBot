@@ -39,11 +39,15 @@ public class StockBot {
         long read = System.currentTimeMillis();
         System.out.printf("Read took %,dms\n", read - start);
 
-        SMABestBuySellStrategy smaBestBuySellStrategy = new SMABestBuySellStrategy(stockBot.stockMap, StockDate.parse("2013-01-29"), StockDate.parse("2014-09-29"));
-        smaBestBuySellStrategy.compute();
-//        BuySellStrategy buySellStrategy = new BuyMondaySellFridayStrategy(stockBot.stockMap, StockDate.parse("2014-01-29"), StockDate.parse("2014-09-29"));
-//        buySellStrategy.compute();
-//        buySellStrategy.report();
+//        SMABestBuySellStrategy smaBestBuySellStrategy = new SMABestBuySellStrategy(stockBot.stockMap, StockDate.parse("2013-01-29"), StockDate.parse("2014-09-29"));
+//        smaBestBuySellStrategy.compute();
+        BuySellStrategy buySellStrategy = new BuyMondaySellFridayStrategy(stockBot.stockMap, StockDate.parse("2014-01-29"), StockDate.parse("2014-09-29"));
+        buySellStrategy.compute();
+        buySellStrategy.report();
+        
+        buySellStrategy = new MACDBuySellStrategy(stockBot.stockMap, StockDate.parse("2014-01-29"), StockDate.parse("2014-09-29"));
+        buySellStrategy.compute();
+        buySellStrategy.report();
 
         long stop = System.currentTimeMillis();
         System.out.printf("Analyze took %,dms\n", stop - read);

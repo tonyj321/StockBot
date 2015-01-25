@@ -43,6 +43,10 @@ class Stock {
         throw new StockValueNotAvailable("Stock " + ticker + " not available for date " + date);
     }
 
+    public String getTicker() {
+        return ticker;
+    }
+
     HistoricalValue closingPrices() {
         return new HistoricalValue() {
 
